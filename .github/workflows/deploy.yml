@@ -3,14 +3,14 @@
 on:
   push:
     branches:
-      - main          # Se ejecuta cada vez que subes cambios a la rama main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Descargar el código
+      - name: Descargar el codigo
         uses: actions/checkout@v4
 
       - name: Instalar Node.js
@@ -29,7 +29,7 @@ jobs:
 
       - name: Agregar .htaccess
         run: |
-          cat > apps/web/dist/.htaccess << 'EOF'
+          cat > apps/web/dist/.htaccess << 'HTEOF'
           RewriteEngine On
           RewriteBase /
           AddType application/javascript .js
@@ -37,7 +37,7 @@ jobs:
           RewriteCond %{REQUEST_FILENAME} !-f
           RewriteCond %{REQUEST_FILENAME} !-d
           RewriteRule ^ index.html [QSA,L]
-          EOF
+          HTEOF
 
       - name: Subir a Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -46,5 +46,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: apps/web/dist/
-          server-dir: public_html/
+          server-dir: /dominios/agroimpulsooriente.store/public_html/
           dangerous-clean-slate: false
+          timeout: 60000
