@@ -1,0 +1,50 @@
+﻿name: Build y Deploy a Hostinger
+
+on:
+  push:
+    branches:
+      - main          # Se ejecuta cada vez que subes cambios a la rama main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Construir el sitio
+        run: npm run build --prefix apps/web
+        env:
+          NODE_ENV: production
+
+      - name: Agregar .htaccess
+        run: |
+          cat > apps/web/dist/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+          AddType application/javascript .js
+          AddType text/css .css
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^ index.html [QSA,L]
+          EOF
+
+      - name: Subir a Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: apps/web/dist/
+          server-dir: public_html/
+          dangerous-clean-slate: false
