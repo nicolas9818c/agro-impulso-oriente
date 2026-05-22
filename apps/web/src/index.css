@@ -197,4 +197,13 @@
   .cta-banner {
     @apply bg-primary text-primary-foreground rounded-3xl p-8 md:p-12 relative overflow-hidden;
   }
+
+  /* Ocultar scrollbar horizontal manteniendo la funcionalidad */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
