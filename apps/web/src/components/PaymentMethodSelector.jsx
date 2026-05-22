@@ -100,7 +100,6 @@ const PaymentMethodSelector = ({ selectedMethod, onSelect }) => {
                   </TooltipProvider>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{method.description}</p>
-                </div>
               </div>
 
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-primary' : 'border-muted-foreground/30'}`}>

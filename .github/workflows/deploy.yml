@@ -27,6 +27,7 @@ jobs:
         env:
           NODE_ENV: production
           VITE_POCKETBASE_URL: https://yes-tall.pockethost.io
+          VITE_WOMPI_PUBLIC_KEY: ${{ secrets.VITE_WOMPI_PUBLIC_KEY }}
 
       - name: Agregar .htaccess
         run: |
