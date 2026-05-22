@@ -1,18 +1,19 @@
 
 import React from 'react';
-import { CreditCard, Landmark, Banknote, Wallet, CalendarClock, Info } from 'lucide-react';
+import { CreditCard, Landmark, Banknote, Wallet, CalendarClock, Info, Smartphone } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { motion } from 'framer-motion';
 
 const PAYMENT_METHODS = [
   {
-    id: 'stripe',
-    name: 'Tarjeta de Crédito / Débito',
-    description: 'Pago seguro en línea procesado por Stripe',
-    icon: CreditCard,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-    tooltip: 'Aceptamos Visa, Mastercard, American Express'
+    id: 'wompi',
+    name: 'Wompi — PSE / Nequi / Tarjeta',
+    description: 'Pasarela colombiana. PSE, Nequi, tarjetas débito y crédito',
+    icon: Smartphone,
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-500/10',
+    badge: 'Recomendado',
+    tooltip: 'Wompi es la pasarela de pagos de Bancolombia. 100% colombiana y segura.'
   },
   {
     id: 'transfer',
@@ -77,7 +78,14 @@ const PaymentMethodSelector = ({ selectedMethod, onSelect }) => {
               
               <div className="flex-grow">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground font-sans">{method.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-foreground font-sans">{method.name}</h3>
+                    {method.badge && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full border border-emerald-200">
+                        {method.badge}
+                      </span>
+                    )}
+                  </div>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -92,6 +100,7 @@ const PaymentMethodSelector = ({ selectedMethod, onSelect }) => {
                   </TooltipProvider>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{method.description}</p>
+                </div>
               </div>
 
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-primary' : 'border-muted-foreground/30'}`}>

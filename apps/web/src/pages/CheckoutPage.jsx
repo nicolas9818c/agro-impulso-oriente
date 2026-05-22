@@ -42,7 +42,7 @@ const CheckoutPage = () => {
     notes: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('stripe');
+  const [paymentMethod, setPaymentMethod] = useState('wompi');
 
   const subtotal = cartItems.reduce((total, item) => {
     const price = item.variant.price_in_cents / 100;
@@ -66,59 +66,59 @@ const CheckoutPage = () => {
     setCurrentStep(3);
   };
 
+  const saveOrderAndProceed = async (extraStatus = 'pending') => {
+    const vendorId = cartItems[0]?.product?.vendorId || 'unknown';
+    const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
+    const orderData = {
+      orderNumber,
+      buyerId: currentUser.id,
+      vendorId,
+      items: cartItems.map(item => ({
+        productId: item.product.id,
+        name: item.product.title || item.product.name,
+        quantity: item.quantity,
+        price: item.variant?.price_in_cents ? item.variant.price_in_cents / 100 : (item.product.price || 0)
+      })),
+      totalAmount: total,
+      shippingAddress: formData,
+      paymentMethod,
+      status: extraStatus
+    };
+    const record = await pb.collection('orders').create(orderData, { $autoCancel: false });
+    return record;
+  };
+
   const processOrder = async () => {
     setLoading(true);
     try {
-      if (paymentMethod === 'stripe') {
-        const response = await apiServerClient.fetch('/stripe/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: total, 
-            productName: `Pedido en Agro Impulso (${cartItems.length} items)`,
-            successUrl: window.location.origin + '/checkout?step=success&session_id={CHECKOUT_SESSION_ID}',
-            cancelUrl: window.location.origin + '/checkout'
-          })
-        });
-        
-        const data = await response.json();
-        
-        // In a real app we save pending order here first, but we skip for demo
-        window.open(data.url, '_blank');
-        
-        // Simulate local success for demo purposes
-        setOrderId(`ORD-${Date.now().toString().slice(-6)}`);
-        setCurrentStep(4);
-        clearCart();
-      } else {
-        // Handle other payment methods directly via PocketBase
-        const vendorId = cartItems[0].product.vendorId || 'unknown';
-        
-        const orderData = {
-          orderNumber: `ORD-${Date.now().toString().slice(-6)}`,
-          buyerId: currentUser.id,
-          vendorId: vendorId,
-          items: cartItems.map(item => ({
-            productId: item.product.id,
-            name: item.product.title,
-            quantity: item.quantity,
-            price: item.variant.price_in_cents / 100
-          })),
-          totalAmount: total,
-          shippingAddress: formData,
-          paymentMethod: paymentMethod,
-          status: 'pending'
-        };
-
-        const record = await pb.collection('orders').create(orderData, { $autoCancel: false });
-        
+      if (paymentMethod === 'wompi') {
+        // Guardar pedido como pendiente, luego redirigir a Wompi
+        const record = await saveOrderAndProceed('pending');
         setOrderId(record.orderNumber);
-        setCurrentStep(4);
+
+        // Wompi checkout widget / link de pago
+        // Reemplaza WOMPI_PUBLIC_KEY con tu llave pública de Wompi
+        const WOMPI_PUBLIC_KEY = import.meta.env.VITE_WOMPI_PUBLIC_KEY || 'pub_test_XXXXXXXX';
+        const wompiUrl = `https://checkout.wompi.co/p/?public-key=${WOMPI_PUBLIC_KEY}` +
+          `&currency=COP` +
+          `&amount-in-cents=${Math.round(total * 100)}` +
+          `&reference=${record.orderNumber}` +
+          `&redirect-url=${encodeURIComponent(window.location.origin + '/checkout?step=success&order=' + record.orderNumber)}`;
+
         clearCart();
+        window.location.href = wompiUrl;
+        return;
       }
+
+      // Otros métodos (transferencia, contra entrega, billetera, cuotas)
+      const record = await saveOrderAndProceed('pending');
+      setOrderId(record.orderNumber);
+      setCurrentStep(4);
+      clearCart();
+
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Error al procesar el pago. Intenta nuevamente.');
+      toast.error('Error al procesar el pedido. Intenta nuevamente.');
     } finally {
       setLoading(false);
     }

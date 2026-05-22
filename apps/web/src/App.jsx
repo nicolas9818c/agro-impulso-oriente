@@ -20,11 +20,33 @@ import VendorProfilePage from './pages/VendorProfilePage';
 import SobreNosotrosPage from './pages/SobreNosotrosPage';
 import ContactoPage from './pages/ContactoPage';
 import EditorDashboardPage from './pages/EditorDashboardPage';
+import MiCuentaPage from './pages/MiCuentaPage';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import { Link } from 'react-router-dom';
 
-// Placeholder generic route
-const PlaceholderPage = ({ title }) => (
-  <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
-    <h1 className="text-3xl font-bold">{title} - Próximamente</h1>
+const NotFoundPage = () => (
+  <div className="min-h-screen flex flex-col bg-background">
+    <Header />
+    <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
+      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span className="text-4xl">🌿</span>
+      </div>
+      <h1 className="text-7xl font-black text-primary mb-4">404</h1>
+      <h2 className="text-2xl font-bold mb-3">Página no encontrada</h2>
+      <p className="text-muted-foreground max-w-sm mb-8">
+        Lo sentimos, la página que buscas no existe o fue movida.
+      </p>
+      <div className="flex flex-wrap gap-3 justify-center">
+        <Link to="/" className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 transition-colors">
+          Volver al inicio
+        </Link>
+        <Link to="/productos" className="px-6 py-3 border border-border rounded-xl font-semibold hover:bg-muted transition-colors">
+          Ver Productos
+        </Link>
+      </div>
+    </main>
+    <Footer />
   </div>
 );
 
@@ -66,13 +88,13 @@ function App() {
             />
 
             {/* Protected Buyer Routes */}
-            <Route 
-              path="/mi-cuenta" 
+            <Route
+              path="/mi-cuenta"
               element={
                 <ProtectedRoute>
-                  <PlaceholderPage title="Mi Cuenta" />
+                  <MiCuentaPage />
                 </ProtectedRoute>
-              } 
+              }
             />
 
             {/* Info Pages */}
@@ -89,16 +111,8 @@ function App() {
               }
             />
             
-            {/* Catch all */}
-            <Route path="*" element={
-              <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
-                <h1 className="text-6xl font-black text-primary mb-4">404</h1>
-                <p className="text-xl text-muted-foreground mb-8">Página no encontrada</p>
-                <a href="/" className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-colors">
-                  Volver al inicio
-                </a>
-              </div>
-            } />
+            {/* Catch all 404 */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Router>
       </CartProvider>
