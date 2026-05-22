@@ -29,7 +29,7 @@ jobs:
 
       - name: Agregar .htaccess
         run: |
-          cat > apps/web/dist/.htaccess << 'HTEOF'
+          cat > dist/apps/web/.htaccess << 'HTEOF'
           RewriteEngine On
           RewriteBase /
           AddType application/javascript .js
@@ -45,7 +45,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: apps/web/dist/
+          local-dir: dist/apps/web/
           server-dir: /dominios/agroimpulsooriente.store/public_html/
           dangerous-clean-slate: false
           timeout: 60000
