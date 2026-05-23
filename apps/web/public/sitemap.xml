@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Páginas principales -->
   <url>
     <loc>https://agroimpulsooriente.store/</loc>
     <changefreq>daily</changefreq>
@@ -18,8 +20,67 @@
   <url>
     <loc>https://agroimpulsooriente.store/contacto</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
+
+  <!-- Catálogos por categoría -->
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Frutas+Tropicales</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Ganade%C3%ADa+y+C%C3%A1rnicos</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=L%C3%A1cteos+y+Derivados</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Pescados+de+R%C3%ADo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Miel+y+Apicultura</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Granos+y+Cereales</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Artesan%C3%ADas+Llaneras</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Insumos+Agropecuarios</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Productos+Transformados</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Hortalizas+y+Verduras</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productos?category=Pl%C3%A1tano+y+Yuca</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Rutas de autenticación -->
   <url>
     <loc>https://agroimpulsooriente.store/login</loc>
     <changefreq>yearly</changefreq>
@@ -30,4 +91,5 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
 </urlset>

@@ -1,22 +1,203 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShoppingCart, MapPin, Store, ArrowLeft, ShieldCheck,
   Truck, Star, Info, Minus, Plus, AlertCircle,
-  Share2, MessageCircle, ChevronRight, Award, Sparkles, TrendingUp, Tag
+  Share2, MessageCircle, ChevronRight, Award, Sparkles, TrendingUp, Tag,
+  Loader2, CheckCircle2, User
 } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from '@/components/ProductCard';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+// ─── ReviewForm component ──────────────────────────────────────────────────────
+const StarPicker = ({ value, onChange }) => (
+  <div className="flex gap-1">
+    {[1, 2, 3, 4, 5].map(s => (
+      <button
+        key={s}
+        type="button"
+        onClick={() => onChange(s)}
+        className="focus:outline-none"
+      >
+        <Star
+          className={`w-7 h-7 transition-colors ${
+            s <= value ? 'fill-warning text-warning' : 'text-muted hover:text-warning/60'
+          }`}
+        />
+      </button>
+    ))}
+  </div>
+);
+
+const ReviewsTab = ({ product }) => {
+  const { isAuthenticated, currentUser } = useAuth();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+
+  const fetchReviews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await pb.collection('reviews').getList(1, 50, {
+        filter: `productId = "${product.id}"`,
+        sort: '-created',
+        expand: 'userId',
+        $autoCancel: false,
+      });
+      setReviews(res.items);
+    } catch {
+      // collection may not exist yet
+    } finally {
+      setLoading(false);
+    }
+  }, [product.id]);
+
+  useEffect(() => { fetchReviews(); }, [fetchReviews]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) { toast.error('Escribe un comentario'); return; }
+    setSubmitting(true);
+    try {
+      await pb.collection('reviews').create({
+        productId: product.id,
+        userId: currentUser.id,
+        rating,
+        comment: comment.trim(),
+      }, { $autoCancel: false });
+
+      // Recalculate product rating
+      const allReviews = await pb.collection('reviews').getList(1, 200, {
+        filter: `productId = "${product.id}"`,
+        fields: 'rating',
+        $autoCancel: false,
+      });
+      const avgRating = allReviews.items.reduce((s, r) => s + r.rating, 0) / allReviews.totalItems;
+      await pb.collection('products').update(product.id, {
+        rating: Math.round(avgRating * 10) / 10,
+        reviewCount: allReviews.totalItems,
+      }, { $autoCancel: false });
+
+      toast.success('¡Reseña publicada!');
+      setComment('');
+      setRating(5);
+      setSubmitted(true);
+      fetchReviews();
+    } catch (err) {
+      toast.error('Error al publicar la reseña. Intenta de nuevo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatDate = (d) => new Date(d).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  return (
+    <div className="space-y-6">
+      {/* Summary */}
+      {reviews.length > 0 && (
+        <div className="flex items-center gap-6 pb-6 border-b border-border">
+          <div className="text-center">
+            <div className="text-5xl font-black text-foreground">
+              {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}
+            </div>
+            <div className="flex items-center gap-0.5 justify-center mt-1">
+              {[1,2,3,4,5].map(s => (
+                <Star key={s} className={`w-4 h-4 ${s <= Math.round(reviews.reduce((a,r)=>a+r.rating,0)/reviews.length) ? 'fill-warning text-warning' : 'text-muted'}`} />
+              ))}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">{reviews.length} reseña{reviews.length !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Review list */}
+      {loading ? (
+        <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+      ) : reviews.length === 0 ? (
+        <div className="text-center py-8">
+          <Star className="w-12 h-12 text-muted mx-auto mb-4" />
+          <h3 className="text-lg font-medium mb-1">Aún no hay reseñas</h3>
+          <p className="text-muted-foreground text-sm">Sé el primero en calificar este producto.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {reviews.map(r => (
+            <div key={r.id} className="bg-muted/40 rounded-2xl p-5 border border-border">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-semibold">
+                    {r.expand?.userId?.name || 'Comprador verificado'}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">{formatDate(r.created)}</span>
+              </div>
+              <div className="flex items-center gap-0.5 mb-2">
+                {[1,2,3,4,5].map(s => (
+                  <Star key={s} className={`w-3.5 h-3.5 ${s <= r.rating ? 'fill-warning text-warning' : 'text-muted'}`} />
+                ))}
+              </div>
+              <p className="text-sm text-foreground leading-relaxed">{r.comment}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Review form */}
+      {isAuthenticated && !submitted ? (
+        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 space-y-4 mt-4">
+          <h4 className="font-bold text-base">Deja tu reseña</h4>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Tu calificación:</p>
+            <StarPicker value={rating} onChange={setRating} />
+          </div>
+          <Textarea
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            placeholder="Comparte tu experiencia con este producto..."
+            rows={3}
+            required
+            maxLength={500}
+            className="resize-none"
+          />
+          <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+            {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publicando...</> : 'Publicar Reseña'}
+          </Button>
+        </form>
+      ) : submitted ? (
+        <div className="flex items-center gap-3 bg-success/10 border border-success/20 rounded-xl p-4">
+          <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
+          <p className="text-sm font-medium text-success">¡Gracias por tu reseña!</p>
+        </div>
+      ) : (
+        <div className="bg-muted/50 rounded-xl p-4 text-center border border-border">
+          <p className="text-sm text-muted-foreground">
+            <Link to="/login" className="text-primary font-semibold hover:underline">Inicia sesión</Link> para dejar una reseña.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Main component ────────────────────────────────────────────────────────────
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -397,24 +578,7 @@ const ProductDetailPage = () => {
                 )}
               </TabsContent>
               <TabsContent value="reviews" className="p-6 bg-card rounded-2xl border border-border">
-                {product.rating > 0 ? (
-                  <div className="flex items-center gap-6 mb-6 pb-6 border-b border-border">
-                    <div className="text-center">
-                      <div className="text-5xl font-black text-foreground">{product.rating.toFixed(1)}</div>
-                      <div className="flex items-center gap-0.5 justify-center mt-1">
-                        {[1,2,3,4,5].map(s => (
-                          <Star key={s} className={`w-4 h-4 ${s <= Math.round(product.rating) ? 'fill-warning text-warning' : 'text-muted'}`} />
-                        ))}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">{product.reviewCount} reseñas</div>
-                    </div>
-                  </div>
-                ) : null}
-                <div className="text-center py-8">
-                  <Star className="w-12 h-12 text-muted mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Aún no hay reseñas escritas</h3>
-                  <p className="text-muted-foreground text-sm">Sé el primero en calificar este producto después de comprarlo.</p>
-                </div>
+                <ReviewsTab product={product} />
               </TabsContent>
             </Tabs>
           </div>

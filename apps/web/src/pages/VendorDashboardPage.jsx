@@ -41,13 +41,22 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+// ⚠️  Estas categorías DEBEN coincidir con las del catálogo (ProductsPage)
 const CATEGORIES = [
-  'Insumos Agrícolas', 'Semillas', 'Fertilizantes', 'Herramientas',
-  'Productos Pecuarios', 'Alimentos Concentrados', 'Medicamentos Veterinarios',
-  'Productos Frescos', 'Productos Transformados', 'Servicios Agropecuarios',
+  'Frutas Tropicales',
+  'Hortalizas y Verduras',
+  'Plátano y Yuca',
+  'Ganadería y Cárnicos',
+  'Lácteos y Derivados',
+  'Pescados de Río',
+  'Miel y Apicultura',
+  'Granos y Cereales',
+  'Artesanías Llaneras',
+  'Insumos Agropecuarios',
+  'Productos Transformados',
 ];
 
-const LOCATIONS = ['Puerto Carreño', 'Departamental', 'Regional'];
+const LOCATIONS = ['Puerto Carreño', 'Cumaribo', 'La Primavera', 'Santa Rosalía', 'Regional'];
 
 const ORDER_STATUSES = {
   pending:   { label: 'Pendiente',  cls: 'bg-amber-100 text-amber-800 border-amber-200' },
