@@ -15,7 +15,7 @@ const SignupPage = () => {
     email: '',
     password: '',
     passwordConfirm: '',
-    role: 'user' // 'user' (buyer) or 'seller'
+    role: 'buyer' // 'buyer' or 'seller'
   });
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -36,7 +36,7 @@ const SignupPage = () => {
     try {
       await signup(formData);
       toast.success('Cuenta creada exitosamente');
-      navigate(formData.role === 'seller' ? '/vendedor/perfil' : '/');
+      navigate(formData.role === 'seller' ? '/vendedor/perfil' : '/mi-cuenta');
     } catch (error) {
       toast.error(error.message || 'Error al crear la cuenta. Verifica tus datos.');
       console.error(error);
@@ -67,8 +67,8 @@ const SignupPage = () => {
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <button
                   type="button"
-                  onClick={() => setFormData({...formData, role: 'user'})}
-                  className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${formData.role === 'user' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+                  onClick={() => setFormData({...formData, role: 'buyer'})}
+                  className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${formData.role === 'buyer' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
                 >
                   <User className="w-6 h-6 mb-2" />
                   <span className="font-medium text-sm">Comprador</span>
