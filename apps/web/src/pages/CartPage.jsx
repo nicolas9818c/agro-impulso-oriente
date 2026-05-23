@@ -8,14 +8,20 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 
+const SHIPPING_COST = 15000; // tarifa plana estimada — misma que en CheckoutPage
+
 const CartPage = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
 
   const subtotal = cartItems.reduce((total, item) => {
     const price = item.variant.price_in_cents / 100;
     return total + (price * item.quantity);
   }, 0);
+
+  const total = subtotal + (cartItems.length > 0 ? SHIPPING_COST : 0);
+
+  const cop = (n) => `$${Number(n).toLocaleString('es-CO')} COP`;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -53,7 +59,7 @@ const CartPage = () => {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold text-lg font-sans text-card-foreground">{item.product.title}</h3>
-                        <p className="text-primary font-medium">${(item.variant.price_in_cents / 100).toLocaleString()} COP</p>
+                        <p className="text-primary font-medium">{cop(item.variant.price_in_cents / 100)}</p>
                       </div>
                       <button 
                         onClick={() => removeFromCart(item.variant.id)}
@@ -81,7 +87,7 @@ const CartPage = () => {
                         </button>
                       </div>
                       <div className="font-bold text-foreground">
-                        ${((item.variant.price_in_cents / 100) * item.quantity).toLocaleString()} COP
+                        {cop((item.variant.price_in_cents / 100) * item.quantity)}
                       </div>
                     </div>
                   </div>
@@ -96,16 +102,17 @@ const CartPage = () => {
                 <div className="space-y-4 mb-6 text-sm">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Subtotal</span>
-                    <span>${subtotal.toLocaleString()} COP</span>
+                    <span className="font-medium text-foreground">{cop(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Envío</span>
-                    <span>Por calcular</span>
+                    <span>Envío estimado</span>
+                    <span className="font-medium text-foreground">{cop(SHIPPING_COST)}</span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between font-bold text-lg text-foreground">
                     <span>Total Estimado</span>
-                    <span>${subtotal.toLocaleString()} COP</span>
+                    <span className="text-primary">{cop(total)}</span>
                   </div>
+                  <p className="text-[11px] text-muted-foreground">El valor del envío puede variar según tu ubicación al finalizar el pedido.</p>
                 </div>
 
                 <Button 
