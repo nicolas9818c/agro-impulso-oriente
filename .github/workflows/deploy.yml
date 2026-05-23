@@ -46,6 +46,21 @@ jobs:
           </FilesMatch>
           HTEOF
 
+      - name: Sobrescribir bundles que Horizons referencia
+        run: |
+          # Horizons sirve su propio index.html con referencias FIJAS a los
+          # bundles originales (index-Bz1oLENb.js / index-D1uVZyrS.css).
+          # Copiamos el output nuevo a esos nombres para que Horizons cargue
+          # siempre el código más reciente sin necesitar editar su index.html.
+          MAIN_JS=$(ls dist/apps/web/assets/index-*.js 2>/dev/null | head -1)
+          MAIN_CSS=$(ls dist/apps/web/assets/index-*.css 2>/dev/null | head -1)
+          echo "Bundle nuevo JS : $MAIN_JS"
+          echo "Bundle nuevo CSS: $MAIN_CSS"
+          [ -n "$MAIN_JS"  ] && cp "$MAIN_JS"  dist/apps/web/assets/index-Bz1oLENb.js
+          [ -n "$MAIN_CSS" ] && cp "$MAIN_CSS" dist/apps/web/assets/index-D1uVZyrS.css
+          echo "Aliases creados:"
+          ls -lh dist/apps/web/assets/
+
       - name: Subir a Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -56,11 +71,3 @@ jobs:
           server-dir: /dominios/agroimpulsooriente.store/public_html/
           dangerous-clean-slate: false
           timeout: 60000
-
-      - name: Forzar subida de index.html via curl
-        run: |
-          curl --ftp-create-dirs \
-            -T dist/apps/web/index.html \
-            "ftp://${{ secrets.FTP_SERVER }}/dominios/agroimpulsooriente.store/public_html/index.html" \
-            --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
-            --retry 3 --retry-delay 2
