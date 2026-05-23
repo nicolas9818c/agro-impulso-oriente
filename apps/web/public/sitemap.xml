@@ -80,6 +80,18 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Blog y Productores -->
+  <url>
+    <loc>https://agroimpulsooriente.store/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://agroimpulsooriente.store/productores</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Rutas de autenticación -->
   <url>
     <loc>https://agroimpulsooriente.store/login</loc>

@@ -24,6 +24,8 @@ import MiCuentaPage from './pages/MiCuentaPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AdminPage from './pages/AdminPage';
+import BlogPage from './pages/BlogPage';
+import ProductoresPage from './pages/ProductoresPage';
 import { Link } from 'react-router-dom';
 
 const NotFoundPage = () => (
@@ -101,6 +103,8 @@ function App() {
             {/* Info Pages */}
             <Route path="/sobre-nosotros" element={<SobreNosotrosPage />} />
             <Route path="/contacto" element={<ContactoPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/productores" element={<ProductoresPage />} />
 
             {/* Editor / Digitador Route */}
             <Route

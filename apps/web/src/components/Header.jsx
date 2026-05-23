@@ -55,6 +55,8 @@ const Header = ({ transparent = false }) => {
   const navLinks = [
     { name: 'Inicio',        path: '/' },
     { name: 'Productos',     path: '/productos' },
+    { name: 'Productores',   path: '/productores' },
+    { name: 'Blog',          path: '/blog' },
     { name: 'Sobre Nosotros',path: '/sobre-nosotros' },
     { name: 'Contacto',      path: '/contacto' },
   ];
