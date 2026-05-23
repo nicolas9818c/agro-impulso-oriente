@@ -54,5 +54,13 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/apps/web/
           server-dir: /dominios/agroimpulsooriente.store/public_html/
-          dangerous-clean-slate: true
+          dangerous-clean-slate: false
           timeout: 60000
+
+      - name: Forzar subida de index.html via curl
+        run: |
+          curl --ftp-create-dirs \
+            -T dist/apps/web/index.html \
+            "ftp://${{ secrets.FTP_SERVER }}/dominios/agroimpulsooriente.store/public_html/index.html" \
+            --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            --retry 3 --retry-delay 2
