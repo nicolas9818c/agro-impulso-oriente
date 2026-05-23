@@ -54,5 +54,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/apps/web/
           server-dir: /dominios/agroimpulsooriente.store/public_html/
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
           timeout: 60000
