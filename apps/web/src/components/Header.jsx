@@ -24,7 +24,7 @@ const Header = ({ transparent = false }) => {
 
   const location = useLocation();
   const navigate  = useNavigate();
-  const { isAuthenticated, isSeller, isEditor, currentUser, logout } = useAuth();
+  const { isAuthenticated, isSeller, isEditor, isAdmin, currentUser, logout } = useAuth();
   const { cartItems } = useCart();
 
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
@@ -187,6 +187,11 @@ const Header = ({ transparent = false }) => {
                   {isEditor && !isSeller && (
                     <DropdownMenuItem asChild>
                       <Link to="/editor" className="cursor-pointer text-accent">Panel Editor</Link>
+                    </DropdownMenuItem>
+                  )}
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="cursor-pointer text-destructive font-semibold">Panel Admin</Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />

@@ -23,6 +23,7 @@ import EditorDashboardPage from './pages/EditorDashboardPage';
 import MiCuentaPage from './pages/MiCuentaPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AdminPage from './pages/AdminPage';
 import { Link } from 'react-router-dom';
 
 const NotFoundPage = () => (
@@ -107,6 +108,16 @@ function App() {
               element={
                 <ProtectedRoute requireEditor={true}>
                   <EditorDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Route */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminPage />
                 </ProtectedRoute>
               }
             />
