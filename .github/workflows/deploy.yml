@@ -32,19 +32,23 @@ jobs:
       - name: Agregar .htaccess
         run: |
           cat > dist/apps/web/.htaccess << 'HTEOF'
-          RewriteEngine On
-          RewriteBase /
-          AddType application/javascript .js
-          AddType text/css .css
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^ index.html [QSA,L]
-          <FilesMatch "^index\.html$">
-            Header set Cache-Control "no-cache, no-store, must-revalidate"
-            Header set Pragma "no-cache"
-            Header set Expires 0
-          </FilesMatch>
-          HTEOF
+RewriteEngine On
+RewriteBase /
+AddType application/javascript .js
+AddType text/css .css
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
+
+# Deshabilitar LSCache y cache de navegador para HTML y assets JS/CSS
+# Esto garantiza que cada deploy sea visible inmediatamente
+<FilesMatch "\.(html|js|css)$">
+  Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+  Header always set Pragma "no-cache"
+  Header always set Expires "0"
+  Header always set X-LiteSpeed-Cache-Control "no-cache"
+</FilesMatch>
+HTEOF
 
       - name: Sobrescribir bundles que Horizons referencia
         run: |
@@ -69,5 +73,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/apps/web/
           server-dir: /dominios/agroimpulsooriente.store/public_html/
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
           timeout: 60000
