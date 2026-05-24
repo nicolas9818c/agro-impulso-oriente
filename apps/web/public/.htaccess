@@ -1,19 +1,20 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
+	AddType application/javascript .js
+	AddType text/css .css
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^ index.html [L]
+	RewriteRule ^ index.html [QSA,L]
 </IfModule>
 
 <IfModule mod_headers.c>
-	Header set X-Powered-By "Hostinger Horizons"
-
-	# Cache everything on CDN by default
-	Header set Cache-Control "public, s-maxage=604800, max-age=0"
-
-	# Cache in browser all assets
-	<If "%{REQUEST_URI} =~ m#^/assets/.*$#">
-		Header set Cache-Control "public, max-age=604800"
-	</If>
+	# No cachear HTML, JS ni CSS — cada deploy debe reflejarse inmediatamente
+	# Elimina el cache de 7 dias de Horizons que ocultaba los nuevos deploys
+	<FilesMatch "\.(html|js|css)$">
+		Header always unset Cache-Control
+		Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+		Header always set Pragma "no-cache"
+		Header always set Expires "0"
+	</FilesMatch>
 </IfModule>
