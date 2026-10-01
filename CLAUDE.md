@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working rules (always follow)
+
+- Respond, write PR descriptions, issue comments and commit messages in **Spanish** (Colombia). Code identifiers stay in English unless the file already uses Spanish.
+- Use Conventional Commits in Spanish (e.g. `feat: agregar filtro de productos`, `fix: corregir total del carrito`).
+- Before opening a PR, run `npm run lint` and `npm run build` and fix any errors.
+- Never commit secrets, `.env` files, PocketBase data (`pb_data`) or build archives (`*.tar.gz`, `dist/`).
+- Keep changes small and focused; explain in the PR what changed and how to test it.
+- Do not modify `.github/workflows/deploy.yml` (production FTP deploy) unless explicitly asked.
+- The target users are farmers in rural Vichada: keep UI text simple, clear and in Spanish, and keep pages light for slow connections.
+
 ## Project: Agro Impulso Oriente
 
 Fair-trade e-commerce platform connecting Colombian farmers (Orinoquía / Vichada region) directly with buyers. Spanish-language UI throughout.
